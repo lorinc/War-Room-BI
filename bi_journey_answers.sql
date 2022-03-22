@@ -1,10 +1,4 @@
--- THIS VIEW MUST BE MATERIALIZED AFTER THE V-DAY JOURNEY GOT CREATED, BECAUSE IT IS STATIC
--- LET'S NOT RUN THIS QUERY THOUSAND TIMES A (V-)DAY WITH NO JUSTIFICATION
-
--- A DEDICATED VIEW - ON TOP OF THIS - SHOULD CONTAIN THE ANSWERS, THE DYNAMIC CONTENT
--- TBD - CAN WE LOAD STATIC DATA INTO SPICE AND READ THE DB FOR DYNAMIC CONTENT ONLY?? 
-
--- on the other hand, this executes in 36ms, probably not worth the optimization effort
+-- this executes in 42ms, probably not worth any optimization / catching effort
 
 create or replace view bi_journey_answers as
 	with
