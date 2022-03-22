@@ -61,6 +61,8 @@ create or replace view bi_journey_answers as
 				jq.*, --lazy, implicit, fix it later
 				ja.user_id as pwa_journey_answer_user_id,
 				ja.id as pwa_journey_answer_id,
+				ja.created_at as pwa_journey_answer_created_at,
+				ja.updated_at  as pwa_journey_answer_updated_at,
 				ja."text" as pwa_journey_answer_text -- needs to be split by type for aggregation?!
 			from pwa_journey_answer ja
 			right join journey_ids ji 
