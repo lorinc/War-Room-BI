@@ -4,7 +4,9 @@
 -- A DEDICATED VIEW - ON TOP OF THIS - SHOULD CONTAIN THE ANSWERS, THE DYNAMIC CONTENT
 -- TBD - CAN WE LOAD STATIC DATA INTO SPICE AND READ THE DB FOR DYNAMIC CONTENT ONLY?? 
 
-create or replace view bi_journey_questions as
+-- on the other hand, this executes in 36ms, probably not worth the optimization effort
+
+create or replace view bi_journey_answers as
 	with
 		journey_ids as (
 			select
@@ -13,11 +15,8 @@ create or replace view bi_journey_questions as
 			from
 				pwa_journey
 			where "version" in (
-				'0.4.6-naplodemo',
-				'0.4.6-statuszdemo',
 				'0.4.7-naplodemo',
-				'0.4.7-statuszdemo'
-				)
+				'0.4.7-statuszdemo')
 		),
 	
 		journey_groups as (
@@ -28,7 +27,7 @@ create or replace view bi_journey_questions as
 				jsg."order" as pwa_journey_step_group_order
 			from pwa_journey_step_group jsg
 			right join journey_ids ji -- predicate pushdown
-			using(pwa_journey_id)     -- similar at each steps
+			using(pwa_journey_id)     -- similar at each step
 		),
 		
 		journey_steps as (
@@ -56,12 +55,41 @@ create or replace view bi_journey_questions as
 				jq.id as pwa_journey_question_id,
 				jq."text" as pwa_journey_question_text, -- recorded once per step, needs BI fix?
 				jq."textFieldLabel" as pwa_journey_question_textFieldLabel,
+				jq."type" as pwa_journey_question_type,
 				jq."order" as pwa_journey_question_order
 			from pwa_journey_question jq 
 			right join journey_steps js 
 			using (pwa_journey_step_id)
+		),
+		
+		journey_answers as (
+			select
+				jq.*, --lazy, implicit, fix it later
+				ja.user_id as pwa_journey_answer_user_id,
+				ja.id as pwa_journey_answer_id,
+				ja."text" as pwa_journey_answer_text -- needs to be split by type for aggregation?!
+			from pwa_journey_answer ja
+			right join journey_ids ji 
+			using(pwa_journey_id)
+			right join journey_questions jq 
+			using(pwa_journey_question_id)
+		),
+		
+		journey_question_choices as (
+			select
+				ja.*, --lazy, implicit, fix it later
+				jqo.value as pwa_journey_question_option_value
+			from pwa_journey_question_option jqo
+			
+			left join pwa_journey_question_option_of_answer jqoa 
+			on jqoa.pwa_journey_question_option_id = jqo.id
+			
+			right join journey_answers ja
+			using(pwa_journey_answer_id)
+
 		)
 	
-	select * from journey_questions
+	
+	select * from journey_question_choices
 	
 go
