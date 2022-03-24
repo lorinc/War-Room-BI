@@ -1,4 +1,12 @@
--- this executes in 42ms, probably not worth any optimization / catching effort
+-- manual setup needed:
+--	   - for the journey version
+--     - for the fake login journey events date filter
+
+-- FIX or IMPROVE ME:
+--     - pwa_journey_question_text fillna
+--     - implicit pull fix
+--     - pwa_journey_answer_text - split by type for aggregation
+--     - 
 
 create or replace view bi_journey_answers as
 	with
@@ -71,7 +79,7 @@ create or replace view bi_journey_answers as
 			using(pwa_journey_question_id)
 		),
 		
-		journey_question_choices as (
+		journey_question_answers_and_choices as (
 			select
 				ja.*, --lazy, implicit, fix it later
 				jqo.value as pwa_journey_question_option_value
@@ -83,9 +91,40 @@ create or replace view bi_journey_answers as
 			right join journey_answers ja
 			using(pwa_journey_answer_id)
 
+		),
+		
+		pretending_logins_as_journey_events as (
+			select -- faking logins as user journey steps
+				'0.4.7-statuszdemo' as pwa_journey_version,
+				'Login' as pwa_journey_step_group_title,
+				0 as pwa_journey_step_group_order,
+				'Login' as pwa_journey_step_title,
+				false as pwa_journey_step_isimportant,
+				1 as pwa_journey_step_order,
+				'00000000-0000-0000-0000-000000000000'::uuid as pwa_journey_question_id,
+				'Honnan léptél be?' as pwa_journey_question_text,
+				'' as pwa_journey_question_textfieldlabel,
+				'simpleselect' as pwa_journey_question_type,
+				1 as pwa_journey_question_order,
+				user_id as pwa_journey_answer_user_id,
+				id as pwa_journey_answer_id,
+				created_at as pwa_journey_answer_created_at,
+				updated_at as pwa_journey_answer_updated_at,
+				'' as pwa_journey_answer_text,
+				case
+					when "fromApp" 
+					then 'app' 
+					else 'nem app' 
+				end as pwa_journey_question_option_value
+			from
+				pwa_login
+			where 
+				created_at > date '2022-03-23'
+				--created_at > current_date
 		)
 	
-	
-	select * from journey_question_choices
+	select * from journey_question_answers_and_choices
+	union
+	select * from pretending_logins_as_journey_events
 	
 go
