@@ -17,10 +17,10 @@ create or replace view bi_journey_answers as
 			from
 				pwa_journey
 			where "version" in (
-				'0.4.7-naplodemo',
-				'0.4.7-statuszdemo')
+				'v1.0.0-naplo',
+				'v1.0.0-statusz')
 		),
-	
+
 		journey_groups as (
 			select
 				ji.pwa_journey_version,
@@ -119,8 +119,7 @@ create or replace view bi_journey_answers as
 			from
 				pwa_login
 			where 
-				created_at > date '2022-03-23'
-				--created_at > current_date
+				created_at > current_date
 		)
 	
 	select * from journey_question_answers_and_choices
