@@ -6,8 +6,8 @@ create or replace view bi_delegated_users_w_locations as
 				analog_user_id,
 				case
 					when user_id is null
-					then 'digital'
-					else 'analog'
+					then 'analog'
+					else 'digital'
 				end as user_type,
 				voting_location_id,
 				coalesce(oath_ind, 0) oath_ind,
