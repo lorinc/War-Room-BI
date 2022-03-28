@@ -70,7 +70,7 @@ create or replace view bi_incidents_w_location_and_usr_details as
 				pr."isInVerbatim"
 			from pwa_report pr
 			-- we want to cover 48hrs, plus the db is 1hrs behind local time
-			where created_at > current_date + interval '-1 day 1 hour'
+			where created_at > current_date + interval '-1 day'
 		),
 		
 		incidents_w_usr_data as (
