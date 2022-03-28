@@ -36,6 +36,7 @@ create or replace view bi_delegated_users_w_locations as
 		
 		delegated_users_w_locations as (
 			select
+				dwl.user_id,
 				dwl.voting_location_id,
 				dwl.oath_ind,
 				dwl.is_mkkp,
