@@ -1,5 +1,5 @@
 create or replace view bi_journey_answers_w_user_and_location_data as
-  with
+	with
 		journey_ids as (
 			select
 				id as pwa_journey_id,
@@ -163,12 +163,15 @@ create or replace view bi_journey_answers_w_user_and_location_data as
 	
 			left join users u 
 			on u.id = dwl.user_id 
-
+		),
+		
+		results as (
+			select *
+			from logins_answers_and_choices
+			left join delegated_users_w_locations
+			using(user_id)		
 		)
 
-		select *
-		from logins_answers_and_choices
-		left join delegated_users_w_locations
-		using(user_id)
+		select * from results
 
 go
