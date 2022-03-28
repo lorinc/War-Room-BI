@@ -1,4 +1,4 @@
-create or replace view bi_journey_answers_w_user_and_location_data
+create or replace view bi_journey_answers_w_user_and_location_data as
   with
 		journey_ids as (
 			select
