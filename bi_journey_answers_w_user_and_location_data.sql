@@ -119,7 +119,7 @@ create or replace view bi_journey_answers_w_user_and_location_data as
 		delegations as (
 			select  
 				user_id,
-				delegation_status
+				delegation_status,
 				voting_location_id,
 				coalesce(oath_ind, 0) oath_ind,
 				is_mkkp
