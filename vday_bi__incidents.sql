@@ -9,8 +9,7 @@ create or replace view vday_bi__incidents as
 				pr."mediaUrls" is not null as has_media,
 				pr."isInVerbatim"
 			from pwa_report pr
-			-- we want to cover 48hrs, plus the db is 1hrs behind local time
-			--where created_at > current_date + interval '-1 day'
+			where created_at > current_date + interval '-1 day'
 		),
 		
 		incidents_w_usr_data as (
