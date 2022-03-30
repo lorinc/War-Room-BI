@@ -9,22 +9,16 @@ create or replace view vday_bi__users_w_locations as
 					then 'analog'
 					else 'digital'
 				end as user_type,
+				delegation_status,
 				voting_location_id,
 				coalesce(oath_ind, 0) oath_ind,
 				is_mkkp
-			from user_2_voting_locations uvl  
-			where delegation_status in (
-				'delegated', 
-				'delegation_successful')	
+			from user_2_voting_locations uvl  	
 		),
 		
 		delegations_w_locations as (
 			select
-				d.user_id,
-				d.analog_user_id,
-				d.voting_location_id,
-				d.oath_ind,
-				d.is_mkkp,
+				d.*,
 				vl.voting_district_short_name as OEVK, 
 				vl.town_id as town_id,
 				vl.location_number as szk,
@@ -36,15 +30,7 @@ create or replace view vday_bi__users_w_locations as
 		
 		delegated_users_w_locations as (
 			select
-				dwl.user_id,
-				au.id as analog_user_id,
-				dwl.voting_location_id,
-				dwl.oath_ind,
-				dwl.is_mkkp,
-				dwl.OEVK, 
-				dwl.town_id,
-				dwl.szk,
-				dwl.szk_address,
+				dwl.*,
 				coalesce(ud.legal_name, au.full_name) as legal_name,
 				coalesce(u.email_address, au.email_address) as email_address,
 				coalesce(u.phone_num, au.phone_num) as phone_num,
