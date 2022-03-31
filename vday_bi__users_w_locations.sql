@@ -22,7 +22,8 @@ create or replace view vday_bi__users_w_locations as
 				vl.voting_district_short_name as OEVK, 
 				vl.town_id as town_id,
 				vl.location_number as szk,
-				vl.address as szk_address
+				vl.address as szk_address,
+				vl.number_of_voters 
 			from delegations d
 			left join voting_locations vl
 			on d.voting_location_id::text = vl.id
