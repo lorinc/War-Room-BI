@@ -3,9 +3,6 @@ create or replace view vday_bi__journey as
 		journey as (
 			select  *
 			from vday_bi__app_feed
-			where "version" in (
-				'v1.0.0-naplo',
-				'v1.0.0-statusz')
 		),
 		
 		users as (
