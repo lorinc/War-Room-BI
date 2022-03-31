@@ -13,7 +13,10 @@ create or replace view vday_bi__users_w_locations as
 				voting_location_id,
 				coalesce(oath_ind, 0) oath_ind,
 				is_mkkp
-			from user_2_voting_locations uvl  	
+			from user_2_voting_locations uvl
+			where delegation_status in (
+				'delegated', 
+				'delegation_successful')	
 		),
 		
 		delegations_w_locations as (
