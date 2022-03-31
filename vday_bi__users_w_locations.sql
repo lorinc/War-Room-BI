@@ -1,23 +1,29 @@
 create or replace view vday_bi__users_w_locations as
 	with
+	
+		-- getting the latest record on every user
+		delegation_filter as (
+			select 
+				id,
+				user_id,
+				max(updated_at_ts)
+			from user_2_voting_locations uvl 
+			where 
+				"type" in ('accepted','manual') and
+				user_id is not null
+			group by user_id, id		
+		),
+		
 		delegations as (
 			select  
-				user_id,
-				analog_user_id,
-				case
-					when user_id is null
-					then 'analog'
-					else 'digital'
-				end as user_type,
-				delegation_status,
-				voting_location_id,
-				coalesce(oath_ind, 0) oath_ind,
-				is_mkkp
+				uvl.user_id,
+				uvl.delegation_status,
+				uvl.voting_location_id,
+				coalesce(uvl.oath_ind, 0) oath_ind,
+				uvl.is_mkkp
 			from user_2_voting_locations uvl
--- 			unreliable manual data, removing condition
---			where delegation_status in (
---				'delegated', 
---				'delegation_successful')	
+			right join delegation_filter df
+			using(id)
 		),
 		
 		delegations_w_locations as (
@@ -36,20 +42,17 @@ create or replace view vday_bi__users_w_locations as
 		delegated_users_w_locations as (
 			select
 				dwl.*,
-				coalesce(ud.legal_name, au.full_name) as legal_name,
-				coalesce(u.email_address, au.email_address) as email_address,
-				coalesce(u.phone_num, au.phone_num) as phone_num,
-				coalesce(ud.personal_identity_num, au.identity_num) as identity_number
+				ud.legal_name,
+				u.email_address,
+				u.phone_num,
+				ud.personal_identity_num
 			from delegations_w_locations dwl
 			
 			left join user_details ud
 			on dwl.user_id = ud.user_id
 	
 			left join users u 
-			on u.id = dwl.user_id 
-			
-			left join analog_users au
-			on dwl.analog_user_id = au.id
+			on u.id = dwl.user_id
 		)
 		
 		select * from delegated_users_w_locations
