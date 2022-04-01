@@ -10,7 +10,7 @@ create or replace view vday_bi__users_w_locations as
 			where 
 				"type" in ('accepted','manual') and
 				user_id is not null
-			group by user_id		
+			group by user_id
 		),
 		
 		delegations as (
@@ -52,6 +52,8 @@ create or replace view vday_bi__users_w_locations as
 	
 			left join users u 
 			on u.id = dwl.user_id
+			
+			where ud.personal_identity_num is not null
 		)
 		
 		select * from delegated_users_w_locations
