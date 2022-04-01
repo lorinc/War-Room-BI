@@ -4,14 +4,13 @@ create or replace view vday_bi__users_w_locations as
 		-- getting the latest record on every user
 		delegation_filter as (
 			select 
-				id,
 				user_id,
-				max(updated_at_ts)
+				max(updated_at_ts) as updated_at_ts
 			from user_2_voting_locations uvl 
 			where 
 				"type" in ('accepted','manual') and
 				user_id is not null
-			group by user_id, id		
+			group by user_id		
 		),
 		
 		delegations as (
@@ -23,7 +22,7 @@ create or replace view vday_bi__users_w_locations as
 				uvl.is_mkkp
 			from user_2_voting_locations uvl
 			right join delegation_filter df
-			using(id)
+			using(user_id, updated_at_ts)
 		),
 		
 		delegations_w_locations as (
