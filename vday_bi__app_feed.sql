@@ -45,7 +45,7 @@ create or replace view vday_bi__app_feed as
 				js.pwa_journey_step_isImportant,
 				js.pwa_journey_step_order,
 				jq.id as pwa_journey_question_id,
-				jq."text" as pwa_journey_question_text, -- recorded once per step, needs BI fix?
+				jq."text" as pwa_journey_question_text,
 				jq."textFieldLabel" as pwa_journey_question_textFieldLabel,
 				jq."type" as pwa_journey_question_type,
 				jq."order" as pwa_journey_question_order
@@ -63,8 +63,10 @@ create or replace view vday_bi__app_feed as
 				ja.updated_at  as pwa_journey_answer_updated_at,
 				ja."text" as pwa_journey_answer_text -- needs to be split by type for aggregation?!
 			from pwa_journey_answer ja
+
 			right join journey_ids ji 
 			using(pwa_journey_id)
+
 			right join journey_questions jq 
 			using(pwa_journey_question_id)
 		),
@@ -72,7 +74,12 @@ create or replace view vday_bi__app_feed as
 		journey_question_answers_and_choices as (
 			select
 				ja.*, --lazy, implicit, fix it later
-				jqo.value as pwa_journey_question_option_value
+				coalesce(
+					ej."name",
+					jqo.value
+				) as pwa_journey_question_option_value,
+				js."name" as jelolo_szerv,
+				js.is_nemz_lista as nemzetisegi_lista
 			from pwa_journey_question_option jqo
 			
 			left join pwa_journey_question_option_of_answer jqoa 
@@ -80,7 +87,12 @@ create or replace view vday_bi__app_feed as
 			
 			right join journey_answers ja
 			using(pwa_journey_answer_id)
-
+			
+			left join egyeni_jelolts ej 
+			on jqoa.reference = ej.id::text
+			
+			left join jelolo_szervs js 
+			on ej.jelolo_szerv_id = js.id
 		),
 		
 		pretending_logins_as_journey_events as (
@@ -105,7 +117,9 @@ create or replace view vday_bi__app_feed as
 					when "fromApp" 
 					then 'app' 
 					else 'nem app' 
-				end as pwa_journey_question_option_value
+				end as pwa_journey_question_option_value,
+				null as jelolo_szerv,
+				null::boolean as nemzetisegi_lista 
 			from
 				pwa_login
 			where 
@@ -120,4 +134,4 @@ create or replace view vday_bi__app_feed as
 		
 		select * from results
 		
-	go
+go
