@@ -1,3 +1,5 @@
+drop view vday_bi__journal_aggr
+
 create or replace view vday_bi__journal_aggr as
 	with
 		raw as (
@@ -7,6 +9,7 @@ create or replace view vday_bi__journal_aggr as
 				szk,
 				szk_address,
 				pwa_journey_step_title,
+				number_of_voters,
 				coalesce(
 					pwa_journey_question_option_value,
 					pwa_journey_answer_text 
