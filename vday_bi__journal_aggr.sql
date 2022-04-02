@@ -1,5 +1,3 @@
-drop view vday_bi__journal_aggr
-
 create or replace view vday_bi__journal_aggr as
 	with
 		raw as (
