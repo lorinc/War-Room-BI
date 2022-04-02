@@ -1,4 +1,4 @@
-create or replace view vday_bi__journey_aggr as
+create or replace view vday_bi__journal_aggr as
 	with
 		raw as (
 			select 
