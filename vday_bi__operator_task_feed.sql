@@ -2,15 +2,27 @@ create or replace view v_day_dashboard as
 	with results as (
 		select
 			user_id,
-			oevk,
+			pwa_journey_step_group_title,
+			pwa_journey_step_title,
 			pwa_journey_question_id,
-			voting_location_id,
-			legal_name,
+			pwa_journey_question_text,
+			pwa_journey_answer_id,
 			pwa_journey_answer_created_at,
+			pwa_journey_answer_updated_at,
+			pwa_journey_answer_text,
+			pwa_journey_question_option_value,
+			issue_label,
+			voting_location_id,
+			oath_ind,
+			is_mkkp,
+			oevk,
+			town_id,
 			szk,
 			szk_address,
+			legal_name,
+			email_address,
 			phone_num,
-			issue_label
+			'' as identity_number
 		from
 			vday_bi__journey vbj 
 		right join
